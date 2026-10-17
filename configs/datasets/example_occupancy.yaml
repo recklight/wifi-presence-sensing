@@ -1,0 +1,22 @@
+# Template dataset manifest for occupancy detection.
+# Replace the placeholder paths with your own capture files (relative paths are
+# resolved against this file's folder, or against data_root in the config).
+# Every recording states its label and session explicitly; file names carry no
+# meaning.  Sessions are the cross-validation groups: record each class in
+# several sessions (different days, different furniture) so a fold never tests
+# on the conditions it trained on.
+name: occupancy-example
+description: empty vs occupied room, several sessions (placeholder paths)
+recordings:
+  - path: ../../data/raw/session1/empty.dat
+    label: empty
+    session: session1
+  - path: ../../data/raw/session1/occupied.dat
+    label: occupied
+    session: session1
+  - path: ../../data/raw/session2/empty.dat
+    label: empty
+    session: session2
+  - path: ../../data/raw/session2/occupied.dat
+    label: occupied
+    session: session2

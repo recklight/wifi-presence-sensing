@@ -1,0 +1,86 @@
+# Default configuration.  Every key is optional; omitted keys keep these values.
+# Override single values on the command line with  --set section.key=value
+
+seed: 42                      # master seed: decompositions, folds and bootstrap derive from it
+log_level: INFO
+dataset: configs/datasets/example_occupancy.yaml   # placeholder: point it at your own manifest
+data_root: null               # base folder for relative capture paths (default: the manifest's folder)
+
+capture:
+  tx_policy: dominant         # dominant | first_chain (first_chain rules out a spatial mapping)
+  apply_antenna_permutation: true
+  bandwidth_mhz: null         # 20 | 40 | null (null: a dataset must not mix bandwidths)
+
+calibration:
+  spatial_mapping: none       # none | identity | hadamard | fourier | phases
+  mapping_phases_rad: null    # square phase table, used with spatial_mapping: phases
+  noise_strategy: robust      # reported | sentinel_guard | robust
+  noise_sentinel_dbm: -127.0
+  noise_fallback_dbm: -92.0
+  noise_threshold: 3.5        # Hampel threshold in scaled MADs
+  noise_window: null          # null: trace-wide median/MAD; odd integer >= 3: rolling window
+  noise_plausible_range_dbm: [-105.0, -60.0]
+  include_quantization_noise: true
+
+resample:
+  rate_hz: 10.0               # keep at or below the long-run packet rate of your captures
+  max_gap_s: 1.0              # longer pauses split a trace instead of being interpolated
+  method: auto                # auto | linear | bin_mean
+  min_segment_s: 10.0
+
+decomposition:
+  method: eemd                # emd | eemd | ceemdan
+  n_ensemble: 50              # residual noise ~ noise_scale / sqrt(n_ensemble)
+  noise_scale: 0.2
+  max_modes: 4
+  stopping: three_threshold   # three_threshold | cauchy | fixed
+  theta1: 0.05
+  theta2: 0.5
+  alpha: 0.05
+  cauchy_tolerance: 0.2
+  fixed_iterations: 10
+  max_sift_iterations: 1000
+  paired_noise: false
+
+features:
+  window_s: 12.8
+  hop_s: 6.4
+  stream_reduction: pca       # pca | mean
+  block_s: 60.0               # time blocks for evaluation.group_by: block
+  n_jobs: 1                   # -1 uses every core; results do not depend on it
+
+table:
+  path: data/raw/amplitude_table.csv   # placeholder
+  n_label_columns: 2
+  label_column: 0
+  n_streams: 6
+  n_subcarriers: 30
+  layout: stream_major
+  sentinel_values: [65535.0]
+  valid_range_db: [-40.0, 80.0]
+  nominal_rate_hz: 1.0
+
+occupancy:
+  model: logistic             # logistic | random_forest | svm | mlp | majority
+  feature_groups: [modal, profile]
+  regularization: 1.0
+  n_estimators: 300
+  positive_label: occupied
+
+evaluation:
+  n_splits: 5
+  group_by: session           # recording | session | block
+  nested_search: false
+  inner_splits: 3
+
+localization:
+  method: knn                 # knn | probabilistic
+  n_neighbors: 3
+  cdf_thresholds_m: [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]
+  n_bootstrap: 1000
+  confidence: 0.95
+  group_by: session
+
+output:
+  root: outputs
+  figure_format: png          # png | pdf | svg

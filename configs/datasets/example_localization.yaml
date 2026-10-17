@@ -1,0 +1,24 @@
+# Template dataset manifest for fingerprint localization.
+# One recording per reference position and session; position is the ground
+# truth (x, y) in metres in the room's coordinate frame.  Repeat every position
+# in at least two sessions so the radio map and the test windows never come
+# from the same recording.
+name: localization-example
+description: reference grid, two sessions (placeholder paths)
+recordings:
+  - path: ../../data/raw/session1/position00.dat
+    label: occupied
+    session: session1
+    position: [1.5, 1.0]
+  - path: ../../data/raw/session1/position01.dat
+    label: occupied
+    session: session1
+    position: [1.5, 5.0]
+  - path: ../../data/raw/session2/position00.dat
+    label: occupied
+    session: session2
+    position: [1.5, 1.0]
+  - path: ../../data/raw/session2/position01.dat
+    label: occupied
+    session: session2
+    position: [1.5, 5.0]

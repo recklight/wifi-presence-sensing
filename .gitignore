@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.venv/
+venv/
+
+# Testing / linting caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.hypothesis/
+.coverage
+htmlcov/
+
+# Measurements never go into version control; point the config at wherever
+# the captures are kept.
+data/raw/*
+!data/raw/.gitkeep
+data/interim/*
+!data/interim/.gitkeep
+*.dat
+*.mat
+*.fig
+*.csv
+*.npy
+*.npz
+*.wav
+*.pkl
+
+# Manifests of your own captures list labels, sessions and positions;
+# only the two templates are part of the repository.
+configs/datasets/*
+!configs/datasets/example_*.yaml
+
+# Run outputs are regenerated from a config and carry their own manifest
+outputs/*
+!outputs/.gitkeep
+examples/output/
+
+# Fitted models
+*.joblib
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Simulated captures written by "wifi-presence-sensing synthesize"
+data/synthetic/

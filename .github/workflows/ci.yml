@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint and Python 3.10 syntax gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.10"
+      - name: 安裝 ruff
+        run: python -m pip install "ruff>=0.4"
+      - name: 檢查 Python 3.10 語法相容性
+        shell: python
+        run: |
+          import ast, pathlib, sys
+          bad = []
+          for f in pathlib.Path(".").rglob("*.py"):
+              if any(p in f.parts for p in (".venv", "build", "dist", "__pycache__")):
+                  continue
+              try:
+                  ast.parse(f.read_text(encoding="utf-8"), filename=str(f), feature_version=(3, 10))
+              except SyntaxError as e:
+                  bad.append(f"{f}: {e.msg}")
+          if bad:
+              print("\n".join(bad))
+              sys.exit(1)
+          print("all files parse as Python 3.10")
+      - name: Ruff
+        run: |
+          ruff check .
+          ruff format --check .
+
+  test:
+    name: Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    # Windows runners default to PowerShell, which judges a multi-line step by its
+    # last command only; bash fails on any line.
+    defaults:
+      run:
+        shell: bash
+    env:
+      # The Windows code page is cp1252; UTF-8 mode keeps Python's text I/O the same as on Linux.
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: 安裝專案
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Pytest
+        run: python -m pytest -q
+
+  oldest-deps:
+    name: Oldest supported dependencies (Python 3.10, no extras)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.10"
+      - name: 安裝最舊的相依版本
+        run: |
+          python -m pip install --upgrade pip
+          pip install "numpy==1.24.*" "scipy==1.10.*" "scikit-learn==1.2.*" "pandas==1.5.*" \
+            "matplotlib==3.6.*" "pyyaml==6.0.*" "typer==0.12.*" "click==8.1.*" \
+            "joblib==1.2.*" "pytest==7.2.*"
+          pip install -e . --no-deps
+      - name: Pytest（沒有 hypothesis，性質測試會自動略過）
+        run: python -m pytest -q

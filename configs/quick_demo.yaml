@@ -1,0 +1,28 @@
+# Fast settings for a dry run on simulated captures (wifi-presence-sensing synthesize).
+# Small ensembles and short windows: fine for checking the pipeline, too coarse
+# for conclusions.
+
+seed: 42
+dataset: data/synthetic/occupancy/manifest.yaml
+
+resample:
+  rate_hz: 10.0
+  max_gap_s: 1.0
+  min_segment_s: 6.4
+
+decomposition:
+  method: eemd
+  n_ensemble: 8
+  max_modes: 3
+
+features:
+  window_s: 6.4
+  hop_s: 3.2
+  block_s: 12.8
+
+evaluation:
+  n_splits: 3
+  group_by: session
+
+localization:
+  n_bootstrap: 300

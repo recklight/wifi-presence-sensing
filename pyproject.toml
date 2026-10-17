@@ -1,0 +1,99 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wifi-presence-sensing"
+version = "0.1.0"
+description = "WiFi CSI analysis for indoor occupancy sensing and fingerprint localization: 802.11n beamforming-report parsing, spatial-mapping inversion, AGC calibration and EEMD modal features."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "RL" }]
+maintainers = [{ name = "RL" }]
+keywords = [
+    "wifi-sensing",
+    "channel-state-information",
+    "csi",
+    "occupancy-detection",
+    "indoor-localization",
+    "empirical-mode-decomposition",
+    "eemd",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Typing :: Typed",
+]
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "scikit-learn>=1.2",
+    "pandas>=1.5",
+    "matplotlib>=3.6",
+    "pyyaml>=6.0",
+    "typer>=0.12",
+    # joblib runs the EEMD/CEEMDAN ensembles and the per-window feature
+    # extraction in parallel and saves fitted classifiers. scikit-learn pulls
+    # it in anyway, but the package imports it directly, so it is listed here.
+    "joblib>=1.2",
+]
+
+[project.optional-dependencies]
+# hypothesis drives the property-based round trips (spatial mapping, bit
+# packing, BER); seed sweeps in the other tests cover the same checks without it.
+test = ["pytest>=7.2", "hypothesis>=6.0"]
+dev = ["pytest>=7.2", "hypothesis>=6.0", "ruff>=0.4"]
+
+[project.scripts]
+wifi-presence-sensing = "wifi_presence_sensing.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/recklight/wifi-presence-sensing"
+Repository = "https://github.com/recklight/wifi-presence-sensing"
+Issues = "https://github.com/recklight/wifi-presence-sensing/issues"
+Changelog = "https://github.com/recklight/wifi-presence-sensing/blob/master/CHANGELOG.md"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+wifi_presence_sensing = ["py.typed"]
+
+[tool.pytest.ini_options]
+minversion = "7.2"
+testpaths = ["tests", "src"]
+# "src" makes the package importable straight from a checkout, without installing.
+pythonpath = ["src"]
+addopts = "-ra --doctest-modules"
+filterwarnings = [
+    "ignore::sklearn.exceptions.ConvergenceWarning",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests", "examples"]
+
+[tool.ruff.format]
+# Ruff 0.16+ also formats code blocks in Markdown; the README examples are aligned by hand.
+exclude = ["*.md"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+# typer declares options as call expressions in parameter defaults; that is the
+# framework's documented idiom, not the mutable-default bug B008 looks for.
+"src/wifi_presence_sensing/cli.py" = ["B008"]

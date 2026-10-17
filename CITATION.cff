@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "如果你在研究中使用了本軟體，請依下列資訊引用。"
+title: "wifi-presence-sensing"
+abstract: "WiFi CSI analysis for indoor occupancy sensing and fingerprint localization: 802.11n beamforming-report parsing, spatial-mapping inversion, AGC calibration and EEMD modal features."
+type: software
+authors:
+  - name: "RL"
+version: "0.1.0"
+date-released: 2026-10-17
+license: MIT
+repository-code: "https://github.com/recklight/wifi-presence-sensing"
+keywords:
+  - wifi-sensing
+  - channel-state-information
+  - csi
+  - occupancy-detection
+  - indoor-localization
+  - empirical-mode-decomposition
+  - eemd

@@ -1,0 +1,36 @@
+# Settings for a CSV amplitude table (one row per packet: label columns, then
+# n_streams x n_subcarriers dB amplitudes).  Use with:
+#   wifi-presence-sensing prepare --table <your table.csv> --config configs/amplitude_table.yaml
+#
+# Rows carry no timestamps, so the table's row rate must be stated
+# (nominal_rate_hz).  Each contiguous run of identical labels becomes one
+# series and one cross-validation group.  label_column picks the column that
+# holds the class (0-based).
+
+table:
+  path: data/raw/amplitude_table.csv   # placeholder
+  n_label_columns: 2
+  label_column: 0
+  n_streams: 6
+  n_subcarriers: 30
+  layout: stream_major
+  sentinel_values: [65535.0]
+  valid_range_db: [-40.0, 80.0]
+  nominal_rate_hz: 1.0
+
+features:
+  window_s: 32.0      # 32 rows at 1 row/s: at least 16 samples per window
+  hop_s: 16.0
+  block_s: 100.0
+
+decomposition:
+  method: eemd
+  n_ensemble: 50
+  max_modes: 3        # a 32-sample window holds few dyadic scales
+
+occupancy:
+  positive_label: null
+
+evaluation:
+  group_by: session   # one group per contiguous run
+  n_splits: 5

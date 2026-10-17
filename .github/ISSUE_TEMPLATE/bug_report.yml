@@ -1,0 +1,43 @@
+name: 錯誤回報
+description: 回報程式的錯誤行為
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: 發生什麼事
+      description: 描述你預期的行為，以及實際發生的行為。
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 重現步驟
+      description: 請提供能重現問題的最小程式碼或指令。
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: traceback
+    attributes:
+      label: 完整錯誤訊息
+      description: 若有例外，請貼上完整的 traceback。
+      render: python
+
+  - type: input
+    id: python-version
+    attributes:
+      label: Python 版本
+      placeholder: "3.10.13"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: 作業系統
+      placeholder: "Windows 11 / Ubuntu 22.04 / macOS 14"
+    validations:
+      required: true
